@@ -1,0 +1,5 @@
+node_modules/
+.ignore/
+.envrc
+.DS_Store
+qx.sqlite
