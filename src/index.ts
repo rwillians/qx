@@ -1,4 +1,3 @@
-import { inspect } from 'node:util';
 import { z } from 'zod/v4';
 import * as std from './standard-schema';
 import * as u from './utils';
@@ -465,6 +464,111 @@ const defineTable = <
 // // // // // // // // // // // // // // // // // // // // // // // //
 
 /**
+ * @public Represents an equality expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprEq = { lhs: Expr, op: '=', rhs: Expr };
+
+/**
+ * @public Represents a not-equal expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprNe = { lhs: Expr, op: '!=', rhs: Expr };
+
+/**
+ * @public  Represents a less-than expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprLt = { lhs: Expr, op: '<', rhs: Expr };
+
+/**
+ * @public  Represents a less-than-or-equal expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprLte = { lhs: Expr, op: '<=', rhs: Expr };
+
+/**
+ * @public  Represents a greater-than expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprGt = { lhs: Expr, op: '>', rhs: Expr };
+
+/**
+ * @public  Represents a greater-than-or-equal expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprGte = { lhs: Expr, op: '>=', rhs: Expr };
+
+/**
+ * @public  Represents a LIKE expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprLike = { lhs: Expr, op: 'LIKE', rhs: string };
+
+/**
+ * @public  Represents a NOT LIKE expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprNotLike = { lhs: Expr, op: 'NOT LIKE', rhs: string };
+
+/**
+ * @public  Represents an IN expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprIn = { lhs: Expr, op: 'IN', rhs: Exclude<Expr, ExprLiteral> | ExprLiteral[] };
+
+/**
+ * @public  Represents a NOT IN expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprNotIn = { lhs: Expr, op: 'NOT IN', rhs: Exclude<Expr, ExprLiteral> | ExprLiteral[] };
+
+/**
+ * @public  Represents an AND expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprAnd = { and: Expr[] };
+
+/**
+ * @public  Represents an OR expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprOr = { or: Expr[] };
+
+/**
+ * @public  Represents a NOT expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprNot = { not: Expr };
+
+/**
+ * @public  Represents an IS expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprIs = { lhs: Expr, op: 'IS', rhs: true | false | null };
+
+/**
+ * @public  Represents an IS NOT expression.
+ * @since   0.1.0
+ * @version 1
+ */
+type ExprIsNot = { lhs: Expr, op: 'IS NOT', rhs: true | false | null };
+
+/**
  * @private Represents a literal value in a query expression.
  * @since   0.1.0
  * @version 1
@@ -477,13 +581,23 @@ type ExprLiteral =
   | null;
 
 /**
- * @private Represents an equality expression in a query.
+ * @private Represents any binary expressions.
  * @since   0.1.0
  * @version 1
  */
-type ExprEq = {
-  $eq: readonly [Expr, Expr];
-};
+type ExprBinaryOp =
+  ExprEq
+  | ExprNe
+  | ExprLt
+  | ExprLte
+  | ExprGt
+  | ExprGte
+  | ExprLike
+  | ExprNotLike
+  | ExprIn
+  | ExprNotIn
+  | ExprIs
+  | ExprIsNot;
 
 /**
  * @private Represents any supported expressions.
@@ -493,6 +607,20 @@ type ExprEq = {
 type Expr =
   Column
   | ExprEq
+  | ExprNe
+  | ExprLt
+  | ExprLte
+  | ExprGt
+  | ExprGte
+  | ExprLike
+  | ExprNotLike
+  | ExprIn
+  | ExprNotIn
+  | ExprIs
+  | ExprIsNot
+  | ExprAnd
+  | ExprOr
+  | ExprNot
   | ExprLiteral;
 
 /**
@@ -500,25 +628,210 @@ type Expr =
  * @since   0.1.0
  * @version 1
  */
-namespace expr {
+const expr = {
+  // // // // // // // // // // // // // // // // // // // // // // //
+  //                     BINARY OP EXPRESSIONS                      //
+  // // // // // // // // // // // // // // // // // // // // // // //
   /**
    * @public  Builds an equality expression.
    * @since   0.1.0
    * @version 1
    */
-  export const eq = <L extends Expr, R extends Expr>(lhs: L, rhs: R): ExprEq => ({ $eq: [lhs, rhs] as const });
+  eq: <L extends Expr, R extends Expr>(lhs: L, rhs: R): ExprEq => ({ lhs, op: '=', rhs }),
+  /**
+   * @public Builds a not-equal expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  ne: <L extends Expr, R extends Expr>(lhs: L, rhs: R): ExprNe => ({ lhs, op: '!=', rhs }),
+  /**
+   * @public Builds a less-than expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  lt: <L extends Expr, R extends Expr>(lhs: L, rhs: R): ExprLt => ({ lhs, op: '<', rhs }),
+  /**
+   * @public Builds a less-than-or-equal expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  lte: <L extends Expr, R extends Expr>(lhs: L, rhs: R): ExprLte => ({ lhs, op: '<=', rhs }),
+  /**
+   * @public Builds a greater-than expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  gt: <L extends Expr, R extends Expr>(lhs: L, rhs: R): ExprGt => ({ lhs, op: '>', rhs }),
+  /**
+   * @public Builds a greater-than-or-equal expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  gte: <L extends Expr, R extends Expr>(lhs: L, rhs: R): ExprGte => ({ lhs, op: '>=', rhs }),
+  /**
+   * @public Builds a LIKE expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  like: <L extends Expr>(lhs: L, rhs: string): ExprLike => ({ lhs, op: 'LIKE', rhs }),
+  /**
+   * @public Builds a NOT LIKE expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  notLike: <L extends Expr>(lhs: L, rhs: string): ExprNotLike => ({ lhs, op: 'NOT LIKE', rhs }),
+  /**
+   * @public Builds an IN expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  in: <L extends Expr, R extends Exclude<Expr, ExprLiteral> | ExprLiteral[]>(lhs: L, rhs: R): ExprIn => ({ lhs, op: 'IN', rhs }),
+  /**
+   * @public Builds a NOT IN expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  notIn: <L extends Expr, R extends Exclude<Expr, ExprLiteral> | ExprLiteral[]>(lhs: L, rhs: R): ExprNotIn => ({ lhs, op: 'NOT IN', rhs }),
+  /**
+   * @public Builds an IS expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  is: (lhs: Expr, rhs: true | false | null): ExprIs => ({ lhs, op: 'IS', rhs }),
+  /**
+   * @public Builds an IS NOT expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  isNot: (lhs: Expr, rhs: true | false | null): ExprIsNot => ({ lhs, op: 'IS NOT', rhs }),
+  // // // // // // // // // // // // // // // // // // // // // // //
+  //                     BOOLEAN OP EXPRESSIONS                     //
+  // // // // // // // // // // // // // // // // // // // // // // //
+  /**
+   * @public Builds an AND expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  and: <E extends Expr>(exprs: E[]): ExprAnd => ({ and: exprs }),
+  /**
+   * @public Builds an OR expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  or: <E extends Expr>(exprs: E[]): ExprOr => ({ or: exprs }),
+  /**
+   * @public Builds a NOT expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  not: <E extends Expr>(expr: E): ExprNot => ({ not: expr }),
 };
 
-// // // // // // // // // // // // // // // // // // // // // // // //
-//                            TYPE GUARDS                            //
-// // // // // // // // // // // // // // // // // // // // // // // //
-
 /**
- * @public  Type guards.
+ * @public  Expression type guards.
  * @since   0.1.0
  * @version 1
  */
 const is = {
+  // // // // // // // // // // // // // // // // // // // // // // //
+  //                     BINARY OP EXPRESSIONS                      //
+  // // // // // // // // // // // // // // // // // // // // // // //
+  /**
+   * @public  Checks whether the given value is a binary op expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  binaryOp: (expr: Expr): expr is ExprBinaryOp => u.isPlainObject(expr) && 'op' in expr && 'lhs' in expr && 'rhs' in expr,
+  /**
+   * @public  Checks whether the given value is an equality expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  eq: (expr: Expr): expr is ExprEq => u.isPlainObject(expr) && 'op' in expr && expr.op === '=',
+  /**
+   * @public  Checks whether the given value is a not-equal expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  ne: (expr: Expr): expr is ExprNe => u.isPlainObject(expr) && 'op' in expr && expr.op === '!=',
+  /**
+   * @public  Checks whether the given value is a less-than expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  lt: (expr: Expr): expr is ExprLt => u.isPlainObject(expr) && 'op' in expr && expr.op === '<',
+  /**
+   * @public  Checks whether the given value is a less-than-or-equal expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  lte: (expr: Expr): expr is ExprLte => u.isPlainObject(expr) && 'op' in expr && expr.op === '<=',
+  /**
+   * @public  Checks whether the given value is a greater-than expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  gt: (expr: Expr): expr is ExprGt => u.isPlainObject(expr) && 'op' in expr && expr.op === '>',
+  /**
+   * @public  Checks whether the given value is a greater-than-or-equal expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  gte: (expr: Expr): expr is ExprGte => u.isPlainObject(expr) && 'op' in expr && expr.op === '>=',
+  /**
+   * @public  Checks whether the given value is a LIKE expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  like: (expr: Expr): expr is ExprLike => u.isPlainObject(expr) && 'op' in expr && expr.op === 'LIKE',
+  /**
+   * @public  Checks whether the given value is a NOT LIKE expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  notLike: (expr: Expr): expr is ExprNotLike => u.isPlainObject(expr) && 'op' in expr && expr.op === 'NOT LIKE',
+  /**
+   * @public  Checks whether the given value is an IN expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  in: (expr: Expr): expr is ExprIn => u.isPlainObject(expr) && 'op' in expr && expr.op === 'IN',
+  /**
+   * @public  Checks whether the given value is a NOT IN expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  notIn: (expr: Expr): expr is ExprNotIn => u.isPlainObject(expr) && 'op' in expr && expr.op === 'NOT IN',
+  /**
+   * @public  Checks whether the given value is an IS expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  is: (expr: Expr): expr is ExprIs => u.isPlainObject(expr) && 'is' in expr,
+  // // // // // // // // // // // // // // // // // // // // // // //
+  //                     BOOLEAN OP EXPRESSIONS                     //
+  // // // // // // // // // // // // // // // // // // // // // // //
+  /**
+   * @public  Checks whether the given value is an AND expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  and: (expr: Expr): expr is ExprAnd => u.isPlainObject(expr) && 'and' in expr,
+  /**
+   * @public  Checks whether the given value is an OR expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  or: (expr: Expr): expr is ExprOr => u.isPlainObject(expr) && 'or' in expr,
+  /**
+   * @public  Checks whether the given value is a NOT expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  not: (expr: Expr): expr is ExprNot => u.isPlainObject(expr) && 'not' in expr,
+  // // // // // // // // // // // // // // // // // // // // // // //
+  //                            LITERALS                            //
+  // // // // // // // // // // // // // // // // // // // // // // //
   /**
    * @public  Checks whether the given value is a boolean literal.
    * @since   0.1.0
@@ -526,29 +839,11 @@ const is = {
    */
   boolean: (value: Expr): value is boolean => typeof value === 'boolean',
   /**
-   * @public  Checks whether the given value is a column expression.
-   * @since   0.1.0
-   * @version 1
-   */
-  column: (expr: Expr): expr is Column => u.isPlainObject(expr) && 'type' in expr && 'schema' in expr,
-  /**
    * @public  Checks whether the given value is a date literal.
    * @since   0.1.0
    * @version 1
    */
   date: (value: Expr): value is Date => value instanceof Date,
-  /**
-   * @public  Checks whether the given value is an equality expression.
-   * @since   0.1.0
-   * @version 1
-   */
-  eq: (expr: Expr): expr is ExprEq => u.isPlainObject(expr) && '$eq' in expr,
-  /**
-   * @public  Checks whether the given value is a literal expression.
-   * @since   0.1.0
-   * @version 1
-   */
-  literal: (expr: Expr): expr is ExprLiteral => expr === null || expr instanceof Date || ['boolean', 'number', 'string'].includes(typeof expr),
   /**
    * @public  Checks whether the given value is a null literal.
    * @since   0.1.0
@@ -567,6 +862,21 @@ const is = {
    * @version 1
    */
   string: (expr: Expr): expr is string => typeof expr === 'string',
+  // // // // // // // // // // // // // // // // // // // // // // //
+  //                             OTHERS                             //
+  // // // // // // // // // // // // // // // // // // // // // // //
+  /**
+   * @public  Checks whether the given value is a literal expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  literal: (expr: Expr): expr is ExprLiteral => expr === null || expr instanceof Date || ['boolean', 'number', 'string'].includes(typeof expr),
+  /**
+   * @public  Checks whether the given value is a column expression.
+   * @since   0.1.0
+   * @version 1
+   */
+  column: (expr: Expr): expr is Column => u.isPlainObject(expr) && 'type' in expr && 'schema' in expr,
 };
 
 // // // // // // // // // // // // // // // // // // // // // // // //
@@ -720,6 +1030,15 @@ type CodecsRegistry = {
 };
 
 /**
+ * @public  A mapping of qx's primitive types to their native database
+ *          types.
+ */
+type PrimitiveToNativeTypeFactory = {
+  [K in Primitive]: (col: Column) => string;
+  // ↑ exaustive mapping to prove that all primitives are covered
+};
+
+/**
  * @public  Represents the result of a statement rendered into DDL.
  * @since   0.1.0
  * @version 1
@@ -733,11 +1052,11 @@ type DDL = { sql: string, params: any[] };
  */
 interface ILogger {
   /**
-   * @public Logs the given SQL query along with its parameters.
+   * @public  Logs a query that has executed successfully.
    * @since   0.1.0
    * @version 1
    */
-  log(sql: string, params: any[]): void;
+  debug(sql: string, params: any[]): void;
 };
 
 /**
@@ -772,19 +1091,6 @@ interface IDatabase {
    */
   query(op: SelectStatement): Promise<any[]>;
 };
-
-// // // // // // // // // // // // // // // // // // // // // // // //
-//                         BUILT-IN LOGGERS                          //
-// // // // // // // // // // // // // // // // // // // // // // // //
-
-/**
- * @public  Creates a basic console logger that logs all queries.
- * @since   0.1.0
- * @version 1
- */
-const createConsoleLogger = (): ILogger => ({
-  log: (sql: string, params: any[]) => { console.log(`\n${sql} ${inspect(params)}\n`) },
-});
 
 // // // // // // // // // // // // // // // // // // // // // // // //
 //                         CREATE STATEMENTS                         //
@@ -877,7 +1183,7 @@ const buildInsertSchema = <T extends Record<string, Column>>(shape: T) => std.st
  */
 class InsertBuilder<T extends Table> {
   constructor(private readonly table: T,
-              private rows: InferForInsert<T>[] = []) {}
+              private rows: InferForInsert<T>[] = []) { }
   /**
    * @public  Adds one or more rows to be inserted.
    * @since   0.1.0
@@ -1006,7 +1312,7 @@ class QueryBuilder<
   T extends Record<string, Aliased<string, Table>>,
   S extends Record<string, Column>
 > {
-  constructor(protected query: Query<T, S>) {}
+  constructor(public readonly query: Query<T, S>) { }
   /**
    * @public  Executes the select statement against the given database,
    *          returning all matching rows.
@@ -1014,7 +1320,8 @@ class QueryBuilder<
    * @version 1
    */
   async all(db: IDatabase) {
-    return db.query(toSelectStatement(this.query)) as Promise<Expand<InferSelection<typeof this.query>>[]>;
+    // @TODO calls query engine with the query object
+    return db.query(toSelectStatement(this.query)) as Promise<Expand<InferSelection<Query<T, S>>>[]>;
   }
   /**
    * @public  Sets a limit on the number of rows to be returned.
@@ -1022,9 +1329,7 @@ class QueryBuilder<
    * @version 1
    */
   limit(n: number) {
-    this.query.limit = n;
-
-    return this;
+    return new QueryBuilder<T, S>({ ...this.query, limit: n });
   }
   /**
    * @public  Sets an offset for the rows to be returned.
@@ -1032,9 +1337,7 @@ class QueryBuilder<
    * @version 1
    */
   offset(n: number) {
-    this.query.offset = n;
-
-    return this;
+    return new QueryBuilder<T, S>({ ...this.query, offset: n });
   }
   /**
    * @public  Executes the select statement against the given database,
@@ -1043,6 +1346,7 @@ class QueryBuilder<
    * @version 1
    */
   async one(db: IDatabase) {
+    // @TODO calls query engine with the query object
     const op = toSelectStatement({ ...this.query, limit: 1, offset: 0 });
 
     const rows = await db.query(op);
@@ -1059,14 +1363,21 @@ class QueryBuilder<
     return new QueryBuilder<T, U>({ ...this.query, select: fn(this.query.registry) });
   }
   /**
-   * @public  Defines the where clause of the query.
+   * @public  Defines the where clause of the query. If there's already
+   *          a WHERE clause in the query, the new clause will be
+   *          ANDed to the existing one.
    * @since   0.1.0
    * @version 1
    */
   where<E extends Expr>(fn: (tables: T) => E) {
-    this.query.where = fn(this.query.registry);
+    const value = fn(this.query.registry);
 
-    return this;
+    const where =
+      this.query.where === undefined ? value
+    : is.and(this.query.where) ? expr.and([...this.query.where.and, value])
+    : expr.and([this.query.where, value]);
+
+    return new QueryBuilder<T, S>({ ...this.query, where });
   }
 }
 
@@ -1091,16 +1402,31 @@ export {
   type CreateTableStatement,
   type DDL,
   type Expr,
+  type ExprAnd,
+  type ExprBinaryOp,
   type ExprEq,
+  type ExprGt,
+  type ExprGte,
+  type ExprIn,
+  type ExprIs,
+  type ExprIsNot,
+  type ExprLike,
   type ExprLiteral,
+  type ExprLt,
+  type ExprLte,
+  type ExprNe,
+  type ExprNot,
+  type ExprNotIn,
+  type ExprNotLike,
+  type ExprOr,
   type IDatabase,
   type ILogger,
   type InsertStatement,
   type Primitive,
+  type PrimitiveToNativeTypeFactory,
   type SelectStatement,
   type Table,
   create,
-  createConsoleLogger,
   defineTable as table,
   expr,
   from,

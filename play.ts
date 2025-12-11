@@ -1,5 +1,5 @@
 import { create, expr, from, into, table } from './src/index';
-import { createConsoleLogger } from './src/index';
+import { createPrettyLogger } from './src/pretty-logger';
 import * as sqlite from './src/bun-sqlite';
 
 const backups = table('backups', t => ({
@@ -18,7 +18,7 @@ const _b1 = backups.as('b1');
 
 const db = sqlite
   .connect('./qx.sqlite')
-  .attachLogger(createConsoleLogger());
+  .attachLogger(createPrettyLogger());
 
 await create.table(backups, { ifNotExists: true }).onto(db);
 
@@ -45,3 +45,18 @@ const backup2 = await from(backups.as('b1'))
   .where(({ b1 }) => expr.eq(b1.id, 2))
   .one(db);
 console.log('backup #2:', backup2);
+
+const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+const complex = await from(backups.as('b1'))
+  .where(({ b1 }) => expr.and([
+    expr.in(b1.id, [1, 2]),
+    expr.or([
+      expr.eq(b1.parentId, 1),
+      expr.is(b1.parentId, null),
+    ]),
+    expr.isNot(b1.path, null),
+    expr.gt(b1.createdAt, lastWeek),
+  ]))
+  .all(db);
+console.log('complex:', complex);

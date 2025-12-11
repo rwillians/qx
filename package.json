@@ -2,10 +2,11 @@
   "name": "@rwillians/qx",
   "description": "A teeny tiny ORM for SQLite.",
   "type": "module",
-  "module": "src/qx.ts",
+  "module": "src/index.ts",
   "scripts": {},
   "dependencies": {
     "@standard-schema/spec": "^1.0.0",
+    "sql-highlight": "^6.1.0",
     "zod": "^4.1.13"
   },
   "devDependencies": {
