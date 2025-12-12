@@ -1,7 +1,7 @@
 {
   "name": "@rwillians/qx",
   "description": "A teeny tiny ORM for SQLite.",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": "Rafael Willians <me@rwillians.com>",
   "license": "MIT",
   "repository": {
@@ -56,7 +56,6 @@
   },
   "dependencies": {
     "@standard-schema/spec": "^1.0.0",
-    "ora": "^9.0.0",
     "sql-highlight": "^6.1.0"
   },
   "devDependencies": {
