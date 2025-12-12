@@ -1,7 +1,7 @@
 {
   "name": "@rwillians/qx",
   "description": "A teeny tiny ORM for SQLite.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Rafael Willians <me@rwillians.com>",
   "license": "MIT",
   "repository": {
@@ -41,6 +41,12 @@
       "import": "./dist/esm/pretty-logger.js",
       "require": "./dist/cjs/pretty-logger.js",
       "default": "./dist/cjs/pretty-logger.js"
+    },
+    "./experimental-migration": {
+      "types": "./dist/types/experimental-migration.d.ts",
+      "import": "./dist/esm/experimental-migration.js",
+      "require": "./dist/cjs/experimental-migration.js",
+      "default": "./dist/cjs/experimental-migration.js"
     }
   },
   "scripts": {
