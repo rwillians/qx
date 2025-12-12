@@ -1,3 +1,4 @@
+import ora from 'ora';
 import { type IDatabase, create, expr, from, into, table } from './index';
 
 const migrations = table('migrations', t => ({
@@ -18,6 +19,8 @@ type Migration = (db: IDatabase) => Promise<void>;
  * @version 1
  */
 export const defineMigrations = (migs: Record<string, Migration>) => async (db: IDatabase) => {
+  let spinner;
+
   await create.table(migrations, { ifNotExists: true }).onto(db);
 
   for (const [id, migration] of Object.entries(migs)) {
@@ -26,13 +29,16 @@ export const defineMigrations = (migs: Record<string, Migration>) => async (db: 
       .exists(db);
 
     if (alreadyMigrated) continue;
+    spinner ??= ora('running migrations...').start();
+    spinner.text = `running migration ${id}...`;
 
-    console.log(`running migration ${id}...`);
+    // @TODO run in a transaction
     await migration(db);
-    console.log('done')
 
     await into(migrations)
       .insert({ id, migratedAt: new Date() })
       .run(db);
   }
+
+  spinner?.stop();
 };
