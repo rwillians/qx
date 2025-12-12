@@ -574,9 +574,9 @@ const connect = (...args: ConstructorParameters<typeof Database>) => new BunSQLi
 /**
  * @public  An in-memory database connection.
  * @since   0.1.12
- * @version 1
+ * @version 2
  */
-const inmemory = connect(':memory:');
+const inmemory = () => connect(':memory:');
 
 // // // // // // // // // // // // // // // // // // // // // // // //
 //                              EXPORTS                              //
