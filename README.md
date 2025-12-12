@@ -51,33 +51,27 @@ console.log(user);
 Here's the basics of what I need from an ORM, thus it's my priority to
 build it first:
 
-- [ ] Defining model fields should be very similar to defining a
-      schema with [Zod](https://zod.dev) (with support for validation
-      refiements and transformations).
-- [ ] The model should have a schema compatible with
-      [standard schema](https://github.com/standard-schema/standard-schema),
-      meaning it should be interoperable with [Zod](https://zod.dev),
-      [ArkType](https://arktype.io), [Joi](https://joi.dev), etc.
-- [ ] It should have a SQL-Like, type-safe, fluent query builder api
-      that works even for NoSQL databases¹, allowing us to write
-      queries once then use them with any supported database.
-- [ ] The query builder should output a plain map representation of
-      the query that can be encoded to JSON, mostly for three reasons:
+- Defining model fields should be very similar to defining a schema
+  with [Zod](https://zod.dev) (with support for validation refiements
+  and transformations).
+- The model should have a schema compatible with [standard schema](https://github.com/standard-schema/standard-schema),
+  meaning it should be interoperable with [Zod](https://zod.dev),
+  [ArkType](https://arktype.io), [Joi](https://joi.dev), etc.
+- It should have a SQL-Like, type-safe, fluent query builder api that
+  works even for NoSQL databases¹, allowing us to write queries once
+  then use them with any supported database.
+- The query builder should output a plain map representation of the
+  query that can be encoded to JSON, mostly for three reasons:
     1. It's easy to test;
     2. Makes it easier to debug queries; and
     3. Makes `qx` more modular, allowing the community to build
        their own extensions.
-- [ ] The query results should be type-safe.
+- The query results should be type-safe.
 
 _¹ Some database adapters might not support all query features, that's
    expected._
 
 Once this vision is fullfilled, `qx` will become `v1.0.0`.
-
-> [!NOTE]
-> Migrations are not part of the scope yet, sorry.
-> I don't like the way migrations work in most ORMs, so I'll take my
-> time to figure out what coulde be a better way to do it.
 
 
 ## Components
@@ -99,7 +93,7 @@ library:
 Database adapters are per driver implementation. Quex ships with a few
 hand picked built-in database adapters:
 
-- [ ] bun-sqlite3 (prioritary)
+- [x] bun-sqlite3 (prioritary)
 - [ ] bun-postgres
 - [ ] mongodb
 
