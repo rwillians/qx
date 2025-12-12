@@ -1,7 +1,7 @@
 {
   "name": "@rwillians/qx",
   "description": "A teeny tiny ORM for SQLite.",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "author": "Rafael Willians <me@rwillians.com>",
   "license": "MIT",
   "repository": {
@@ -53,10 +53,6 @@
     "build": "bun run build:cjs && bun run build:esm",
     "build:cjs": "bun run --bun tsc --project tsconfig-cjs.json",
     "build:esm": "bun run --bun tsc --project tsconfig-esm.json"
-  },
-  "dependencies": {
-    "@standard-schema/spec": "^1.0.0",
-    "sql-highlight": "^6.1.0"
   },
   "devDependencies": {
     "@types/bun": "latest"

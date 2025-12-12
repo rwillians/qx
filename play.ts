@@ -1,5 +1,5 @@
 import { create, expr, from, into, table } from './src/index';
-import { createPrettyLogger } from './src/pretty-logger';
+import { createConsoleLogger } from './src/console-logger';
 import * as sqlite from './src/bun-sqlite';
 
 const backups = table('backups', t => ({
@@ -18,7 +18,7 @@ const _b1 = backups.as('b1');
 
 const db = sqlite
   .connect('./qx.sqlite')
-  .attachLogger(createPrettyLogger());
+  .attachLogger(createConsoleLogger());
 
 await create.table(backups, { ifNotExists: true }).onto(db);
 

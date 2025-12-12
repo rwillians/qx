@@ -1,4 +1,51 @@
-import * as std from '@standard-schema/spec';
+// // // // // // // // // // // // // // // // // // // // // // // //
+//                       STANDARD SCHEMA SPEC                        //
+// // // // // // // // // // // // // // // // // // // // // // // //
+
+// MIT License
+//
+// Copyright (c) 2024 Colin McDonnell
+//
+// Permission is hereby granted, free of charge, to any person obtaininga copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+interface StandardSchemaV1<Input = unknown, Output = Input> {
+  readonly "~standard": StandardSchemaV1.Props<Input, Output>;
+}
+
+declare namespace StandardSchemaV1 {
+  export interface Props<Input = unknown, Output = Input> {
+    readonly version: 1;
+    readonly vendor: string;
+    readonly validate: (value: unknown) => Result<Output> | Promise<Result<Output>>;
+    readonly types?: Types<Input, Output> | undefined;
+  }
+
+  export type Result<Output> = SuccessResult<Output> | FailureResult;
+  export interface SuccessResult<Output> { readonly value: Output; readonly issues?: undefined; }
+  export interface FailureResult { readonly issues: ReadonlyArray<Issue>; }
+  export interface Issue { readonly message: string; readonly path?: ReadonlyArray<PropertyKey | PathSegment> | undefined; }
+  export interface PathSegment { readonly key: PropertyKey; }
+  export interface Types<Input = unknown, Output = Input> { readonly input: Input; readonly output: Output; }
+  export type InferInput<Schema extends StandardSchemaV1> = NonNullable<Schema["~standard"]["types"]>["input"];
+  export type InferOutput<Schema extends StandardSchemaV1> = NonNullable<Schema["~standard"]["types"]>["output"];
+
+  export {};
+}
 
 // // // // // // // // // // // // // // // // // // // // // // // //
 //                        STANDARD SCHEMA API                        //
@@ -9,42 +56,42 @@ import * as std from '@standard-schema/spec';
  * @since   0.1.0
  * @version 1
  */
-export { type StandardSchemaV1 as Schema } from '@standard-schema/spec';
+export { type StandardSchemaV1 as Schema };
 
 /**
  * @public  Infers the input type of a Standard Schema.
  * @since   0.1.0
  * @version 1
  */
-export type input<T extends std.StandardSchemaV1> = std.StandardSchemaV1.InferInput<T>;
+export type input<T extends StandardSchemaV1> = StandardSchemaV1.InferInput<T>;
 
 /**
  * @public  Infers the Input type of a Standard Schema.
  * @since   0.1.0
  * @version 1
  */
-export type output<T extends std.StandardSchemaV1> = std.StandardSchemaV1.InferOutput<T>;
+export type output<T extends StandardSchemaV1> = StandardSchemaV1.InferOutput<T>;
 
 /**
  * @public  Use any standard schema to parse a value.
  * @since   0.1.0
  * @version 1
  */
-export const parse = <T extends std.StandardSchemaV1>(schema: T, value: unknown) => {
+export const parse = <T extends StandardSchemaV1>(schema: T, value: unknown) => {
   const parsed = schema['~standard'].validate(value);
 
   if (parsed instanceof Promise) {
     throw new Error('async standard schema validators are not supported');
   }
 
-  return parsed as std.StandardSchemaV1.Result<output<T>>;
+  return parsed as StandardSchemaV1.Result<output<T>>;
 };
 
 // // // // // // // // // // // // // // // // // // // // // // // //
 //                               UTILS                               //
 // // // // // // // // // // // // // // // // // // // // // // // //
 
-const prependPath = (path: string | number | symbol) => (issue: std.StandardSchemaV1.Issue) => ({
+const prependPath = (path: string | number | symbol) => (issue: StandardSchemaV1.Issue) => ({
   ...issue,
   path: [path, ...(issue.path ?? [])],
 });
@@ -58,7 +105,7 @@ const prependPath = (path: string | number | symbol) => (issue: std.StandardSche
  * @since   0.1.0
  * @version 1
  */
-export type QxArray<T extends std.StandardSchemaV1> = std.StandardSchemaV1<
+export type QxArray<T extends StandardSchemaV1> = StandardSchemaV1<
   input<T>[],
   output<T>[]
 >;
@@ -68,7 +115,7 @@ export type QxArray<T extends std.StandardSchemaV1> = std.StandardSchemaV1<
  * @since   0.1.0
  * @version 1
  */
-export const array = <T extends std.StandardSchemaV1>(schema: T): QxArray<T> => ({
+export const array = <T extends StandardSchemaV1>(schema: T): QxArray<T> => ({
   '~standard': {
     version: 1 as const,
     vendor: 'qx',
@@ -77,7 +124,7 @@ export const array = <T extends std.StandardSchemaV1>(schema: T): QxArray<T> => 
         return { issues: [{ message: 'must be an array' }] };
       }
 
-      const issues: std.StandardSchemaV1.Issue[] = [];
+      const issues: StandardSchemaV1.Issue[] = [];
       const value: any[] = [];
 
       for (let i = 0; i < input.length; i++) {
@@ -100,7 +147,7 @@ export const array = <T extends std.StandardSchemaV1>(schema: T): QxArray<T> => 
  * @since   0.1.0
  * @version 1
  */
-export type QxBoolean = std.StandardSchemaV1<boolean, boolean>;
+export type QxBoolean = StandardSchemaV1<boolean, boolean>;
 
 /**
  * @public  Defines a standard schema for boolean values.
@@ -124,7 +171,7 @@ export const boolean = (): QxBoolean => ({
  * @since   0.1.0
  * @version 1
  */
-export type QxCoercibleDate = std.StandardSchemaV1<Date | string | number, Date>;
+export type QxCoercibleDate = StandardSchemaV1<Date | string | number, Date>;
 
 /**
  * @public  Defines a standard schema for Date values that can be
@@ -161,7 +208,7 @@ export const date = (): QxCoercibleDate => ({
  * @since   0.1.0
  * @version 1
  */
-export type QxInstanceOf<T> = std.StandardSchemaV1<T, T>;
+export type QxInstanceOf<T> = StandardSchemaV1<T, T>;
 
 /**
  * @public  Defines a standard schema that validates instances of a
@@ -185,7 +232,7 @@ export const instanceOf = <T>(ctor: new (...args: any[]) => T): QxInstanceOf<T> 
  * @since   0.1.0
  * @version 1
  */
-export type QxInteger = std.StandardSchemaV1<number, number>;
+export type QxInteger = StandardSchemaV1<number, number>;
 
 /**
  * @public  Defines a standard schema for integers with optional min and max constraints.
@@ -216,7 +263,7 @@ export const integer = ({ min = Number.MIN_SAFE_INTEGER, max = Number.MAX_SAFE_I
  * @since   0.1.0
  * @version 1
  */
-export type QxNullable<T extends std.StandardSchemaV1 = std.StandardSchemaV1> = std.StandardSchemaV1<
+export type QxNullable<T extends StandardSchemaV1 = StandardSchemaV1> = StandardSchemaV1<
   input<T> | null,
   output<T> | null
 >;
@@ -226,7 +273,7 @@ export type QxNullable<T extends std.StandardSchemaV1 = std.StandardSchemaV1> = 
  * @since   0.1.0
  * @version 1
  */
-export const nullable = <T extends std.StandardSchemaV1>(schema: T): QxNullable<T> => ({
+export const nullable = <T extends StandardSchemaV1>(schema: T): QxNullable<T> => ({
   '~standard': {
     version: 1 as const,
     vendor: 'qx',
@@ -242,7 +289,7 @@ export const nullable = <T extends std.StandardSchemaV1>(schema: T): QxNullable<
  * @since   0.1.0
  * @version 1
  */
-export type QxNumber = std.StandardSchemaV1<number, number>;
+export type QxNumber = StandardSchemaV1<number, number>;
 
 /**
  * @public  Defines a standard schema for numbers with optional min
@@ -270,7 +317,7 @@ export const number = ({ min = Number.MIN_VALUE, max = Number.MAX_VALUE }: { min
  * @since   0.1.0
  * @version 1
  */
-type QxStrictObject<T extends Record<string, std.StandardSchemaV1>> = std.StandardSchemaV1<
+type QxStrictObject<T extends Record<string, StandardSchemaV1>> = StandardSchemaV1<
   { [K in keyof T]: input<T[K]> },
   { [K in keyof T]: output<T[K]> }
 >;
@@ -280,7 +327,7 @@ type QxStrictObject<T extends Record<string, std.StandardSchemaV1>> = std.Standa
  * @since   0.1.0
  * @version 1
  */
-export const strictObject = <T extends Record<string, std.StandardSchemaV1>>(shape: T): QxStrictObject<T> => ({
+export const strictObject = <T extends Record<string, StandardSchemaV1>>(shape: T): QxStrictObject<T> => ({
   '~standard': {
     version: 1 as const,
     vendor: 'qx',
@@ -289,7 +336,7 @@ export const strictObject = <T extends Record<string, std.StandardSchemaV1>>(sha
         return { issues: [{ message: 'must be an object' }] };
       }
 
-      const issues: std.StandardSchemaV1.Issue[] = [];
+      const issues: StandardSchemaV1.Issue[] = [];
 
       const inputKeys = new Set(Object.keys(input));
       const shapeKeys = new Set(Object.keys(shape));
@@ -331,7 +378,7 @@ export const strictObject = <T extends Record<string, std.StandardSchemaV1>>(sha
  * @since   0.1.0
  * @version 1
  */
-export type QxString = std.StandardSchemaV1<string, string>;
+export type QxString = StandardSchemaV1<string, string>;
 
 /**
  * @public  Defines a standard schema for strings with optional min
