@@ -571,10 +571,18 @@ class BunSQLite implements IDatabase {
  */
 const connect = (...args: ConstructorParameters<typeof Database>) => new BunSQLite(new Database(...args));
 
+/**
+ * @public  An in-memory database connection.
+ * @since   0.1.12
+ * @version 1
+ */
+const inmemory = connect(':memory:');
+
 // // // // // // // // // // // // // // // // // // // // // // // //
 //                              EXPORTS                              //
 // // // // // // // // // // // // // // // // // // // // // // // //
 
 export {
   connect,
+  inmemory,
 };
