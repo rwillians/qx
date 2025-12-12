@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "declaration": true,
+    "declarationDir": "dist/types/",
+    "strict": true,
+    "noImplicitAny": true
+  }
+}
