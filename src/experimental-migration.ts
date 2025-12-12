@@ -1,8 +1,8 @@
 import { type IDatabase, create, expr, from, into, table } from './index';
 
-const migrations = table('migrations', t => ({
+const migrations = table('schema_migrations', t => ({
   id: t.string({ size: 36 }).primaryKey(),
-  migratedAt: t.datetime(),
+  timestamp: t.datetime(),
 }));
 
 /**
@@ -13,7 +13,8 @@ const migrations = table('migrations', t => ({
 type Migration = (db: IDatabase) => Promise<void>;
 
 /**
- * @public  Defines and runs migrations against the given database.
+ * @public  Defines a set of migrations to be executed against a
+ *          database.
  * @since   0.1.6
  * @version 1
  */
@@ -31,7 +32,7 @@ export const defineMigrations = (migs: Record<string, Migration>) => async (db: 
     await migration(db);
 
     await into(migrations)
-      .insert({ id, migratedAt: new Date() })
+      .insert({ id, timestamp: new Date() })
       .run(db);
   }
 };
