@@ -738,6 +738,21 @@ const expr = {
    * @version 1
    */
   not: <E extends Expr>(expr: E): ExprNot => ({ not: expr }),
+  // // // // // // // // // // // // // // // // // // // // // // //
+  //                         SEMANTICS ONLY                         //
+  // // // // // // // // // // // // // // // // // // // // // // //
+  /**
+   * @public  Builds an ascending order expression.
+   * @since   0.1.13
+   * @version 1
+   */
+  asc: (expr: Expr) => [expr, 'ASC'] as const,
+  /**
+   * @public  Builds a descending order expression.
+   * @since   0.1.13
+   * @version 1
+   */
+  desc: (expr: Expr) => [expr, 'DESC'] as const,
 };
 
 /**

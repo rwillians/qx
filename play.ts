@@ -58,7 +58,7 @@ const complex = await from(backups.as('b1'))
     expr.isNot(b1.path, null),
     expr.gt(b1.createdAt, lastWeek),
   ]))
-  .orderBy(({ b1 }) => [[b1.createdAt, 'DESC']])
+  .orderBy(({ b1 }) => [expr.desc(b1.createdAt)])
   .limit(2)
   .offset(0)
   .all(db);
