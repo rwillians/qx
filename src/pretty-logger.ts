@@ -11,5 +11,7 @@ import {
  * @version 1
  */
 export const createPrettyLogger = (): ILogger => ({
-  debug: (sql: string, params: any[]) => { process.stdout.write(highlight(sql) + ' ' + inspect(params, false, null, true) + '\n'); },
+  query: {
+    debug: (sql: string, params: any[]) => { process.stdout.write(highlight(sql) + ' ' + inspect(params, false, null, true) + '\n'); },
+  },
 });

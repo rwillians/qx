@@ -500,7 +500,7 @@ class BunSQLite implements IDatabase {
   async createTable(op: CreateTableStatement) {
     const { sql } = ddl.createTable(op);
 
-    this.loggers.forEach(logger => logger.debug(sql, []));
+    this.loggers.forEach(logger => logger.query.debug(sql, []));
     this.conn.run(sql);
   }
   /**
@@ -515,7 +515,7 @@ class BunSQLite implements IDatabase {
       insertShape: u.mapKeys(op.insertShape, u.snakeCase),
     });
 
-    this.loggers.forEach(logger => logger.debug(sql, params));
+    this.loggers.forEach(logger => logger.query.debug(sql, params));
     const stmt = this.conn.prepare(sql);
     const rows = stmt.all(...params) as Record<string, any>[];
 
@@ -529,7 +529,7 @@ class BunSQLite implements IDatabase {
   async query(op: SelectStatement) {
     const { sql, params } = ddl.select(op);
 
-    this.loggers.forEach(logger => logger.debug(sql, params));
+    this.loggers.forEach(logger => logger.query.debug(sql, params));
     const stmt = this.conn.prepare(sql);
     const rows = stmt.all(...params) as Record<string, any>[];
 

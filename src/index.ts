@@ -1075,12 +1075,20 @@ type DDL = { sql: string, params: any[] };
  */
 interface ILogger {
   /**
-   * @public  Logs a query that has executed successfully.
+   * @public  Query specific logging methods, so this interface plays
+   *          nice with existing logging libraries (by extending them).
    * @since   0.1.0
    * @version 1
    */
-  debug(sql: string, params: any[]): void;
-};
+  query: {
+    /**
+     * @public  Logs a query that has executed successfully.
+     * @since   0.1.0
+     * @version 1
+     */
+    debug(sql: string, params: any[]): void;
+  };
+}
 
 /**
  * @public  The interface that all database adapters must implement.
