@@ -1,7 +1,7 @@
 # qx (provisory name)
 
-A teeny tiny ORM for TypeScript and JavaScript inspired by Elixir's
-[Ecto](https://hexdocs.pm/ecto).
+A teeny tiny, type-safe and dependency-free ORM for TypeScript and
+JavaScript.
 
 Built for you who wants a simple, small ORM that just works.
 
@@ -10,10 +10,10 @@ import * as sqlite from '@rwillians/qx/bun-sqlite';
 import { create, from, into, table } from '@rwillians/qx';
 
 const users = table('users', t => ({
-  id: t.integer({ primaryKey: true, autogenerate: true }),
+  id: t.integer().autoincrement().primaryKey(),
   name: t.string(),
   email: t.string(),
-  createdAt: t.timestamp({ autogenerate: true }),
+  createdAt: t.datetime(),
 }));
 
 // ...
