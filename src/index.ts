@@ -1097,6 +1097,12 @@ interface ILogger {
      * @version 1
      */
     debug(sql: string, params: any[]): void;
+    /**
+     * @public  Logs a query that has failed with an error.
+     * @since   0.1.12
+     * @version 1
+     */
+    error(sql: string, params: any[], error: Error): void;
   };
 }
 
