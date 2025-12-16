@@ -22,12 +22,12 @@ export const defineMigrations = (migs: Record<string, Migration>) => async (db: 
   await create.table(migrations, { ifNotExists: true }).onto(db);
 
   const { mostRecentId } = await from(migrations.as('m'))
-    .orderBy(({ m }) => [[m.timestamp, 'DESC']])
+    .orderBy(({ m }) => [expr.desc(m.timestamp)])
     .select(({ m }) => ({ mostRecentId: m.id }))
     .one(db) || { mostRecentId: '' };
 
   for (const [id, migrate] of Object.entries(migs)) {
-    if (id < mostRecentId) continue;
+    if (id <= mostRecentId) continue;
 
     await transaction(db, async () => {
       await migrate(db);
