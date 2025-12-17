@@ -42,11 +42,11 @@
       "require": "./dist/cjs/console-logger.js",
       "default": "./dist/cjs/console-logger.js"
     },
-    "./experimental-migration": {
-      "types": "./dist/types/experimental-migration.d.ts",
-      "import": "./dist/esm/experimental-migration.js",
-      "require": "./dist/cjs/experimental-migration.js",
-      "default": "./dist/cjs/experimental-migration.js"
+    "./experimental-migrations": {
+      "types": "./dist/types/experimental-migrations.d.ts",
+      "import": "./dist/esm/experimental-migrations.js",
+      "require": "./dist/cjs/experimental-migrations.js",
+      "default": "./dist/cjs/experimental-migrations.js"
     }
   },
   "scripts": {
