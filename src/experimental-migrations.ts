@@ -64,6 +64,30 @@ type Migration = (db: IDatabase) => Promise<void>;
  *          database.
  * @since   0.1.6
  * @version 2
+ *
+ * @example
+ * ```ts
+ * // src/db/migrations.ts
+ * import { create, defineMigrations } from '@rwillians/qx/experimental-migrations';
+ * import { users } from './users';
+ * import { profiles } from './profiles';
+ *
+ * export const migrate = defineMigrations({
+ *   '0001': async (db) => {
+ *     await create.table(users).onto(db);
+ *   },
+ *   '0002': async (db) => {
+ *     await create.table(profiles).onto(db);
+ *   },
+ * });
+ *
+ * // src/index.ts
+ * import * as sqlite from '@rwillians/qx/bun-sqlite';
+ * import { migrate } from './db/migrations';
+ *
+ * const db = sqlite.connect('./db.sqlite');
+ * await migrate(db)
+ * ```
  */
 export const defineMigrations = (migs: Record<string, Migration>) => async (db: IDatabase) => {
   await create.table(migrations, { ifNotExists: true }).onto(db);
