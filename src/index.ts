@@ -1165,37 +1165,7 @@ interface IDatabase {
  * @since   0.1.10
  * @version 1
  */
-const transaction = async <T>(db: IDatabase, fn: () => Promise<T>): Promise<T> => db.transaction(fn);
-
-// // // // // // // // // // // // // // // // // // // // // // // //
-//                         CREATE STATEMENTS                         //
-// // // // // // // // // // // // // // // // // // // // // // // //
-
-/**
- * @public  Create statement builder.
- * @since   0.1.0
- * @version 1
- */
-const create = {
-  /**
-   * @public  Prepares a create table statement.
-   * @since   0.1.0
-   * @version 1
-   */
-  table: <T extends Table, S extends { ifNotExists?: true; unlogged?: true }>(table: T, options: S = {} as S) => ({
-    /**
-     * @public  Executes the create table statement onto the given
-     *          database.
-     * @since   0.1.0
-     * @version 1
-     */
-    onto: async (db: IDatabase) => db.createTable({
-      ...options,
-      table: table.name,
-      columns: Object.values(table.columns),
-    }),
-  }),
-};
+const transaction = async <T>(db: IDatabase, fn: () => Promise<T>): Promise<T> => db.transaction(fn)
 
 // // // // // // // // // // // // // // // // // // // // // // // //
 //                         INSERT STATEMENT                          //
@@ -1561,7 +1531,6 @@ export {
   type PrimitiveToNativeTypeFactory,
   type SelectStatement,
   type Table,
-  create,
   defineTable as table,
   expr,
   from,
