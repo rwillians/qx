@@ -908,6 +908,30 @@ const is = {
 };
 
 // // // // // // // // // // // // // // // // // // // // // // // //
+//                              LOGGER                               //
+// // // // // // // // // // // // // // // // // // // // // // // //
+
+/**
+ * @public  Query logger interface.
+ * @since   0.1.0
+ * @version 2
+ */
+interface ILogger {
+  /**
+   * @public  Logs a query that has executed successfully.
+   * @since   0.1.17
+   * @version 1
+   */
+  debug(sql: string, params: any[]): void;
+  /**
+   * @public  Logs a query that has failed with an error.
+   * @since   0.1.12
+   * @version 2
+   */
+  error(sql: string, params: any[], error?: Error): void;
+}
+
+// // // // // // // // // // // // // // // // // // // // // // // //
 //                         DATABASE ADAPTER                          //
 // // // // // // // // // // // // // // // // // // // // // // // //
 
@@ -1092,34 +1116,6 @@ type PrimitiveToNativeTypeFactory = {
  * @version 1
  */
 type DDL = { sql: string, params: any[] };
-
-/**
- * @public  Query logger interface.
- * @since   0.1.0
- * @version 1
- */
-interface ILogger {
-  /**
-   * @public  Query specific logging methods, so this interface plays
-   *          nice with existing logging libraries (by extending them).
-   * @since   0.1.0
-   * @version 1
-   */
-  query: {
-    /**
-     * @public  Logs a query that has executed successfully.
-     * @since   0.1.0
-     * @version 1
-     */
-    debug(sql: string, params: any[]): void;
-    /**
-     * @public  Logs a query that has failed with an error.
-     * @since   0.1.12
-     * @version 1
-     */
-    error(sql: string, params: any[], error: Error): void;
-  };
-}
 
 /**
  * @public  The interface that all database adapters must implement.

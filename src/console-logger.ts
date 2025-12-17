@@ -10,8 +10,6 @@ import {
  * @version 2
  */
 export const createConsoleLogger = (): ILogger => ({
-  query: {
-    debug: (sql: string, params: any[]) => { process.stdout.write(sql + ' ' + inspect(params, false, null, true) + '\n'); },
-    error: (sql: string, params: any[]) => { process.stderr.write(sql + ' ' + inspect(params, false, null, true) + '\n'); },
-  },
+  debug: (sql: string, params: any[]) => { process.stdout.write(sql + ' ' + inspect(params, false, null, true) + '\n'); },
+  error: (sql: string, params: any[]) => { process.stderr.write(sql + ' ' + inspect(params, false, null, true) + '\n'); },
 });
