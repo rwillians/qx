@@ -62,7 +62,8 @@
     "build:esm": "bun run --bun tsc --project tsconfig-esm.json"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.9"
+    "@types/bun": "^1.3.9",
+    "@types/node": "^25.3.0"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
