@@ -1531,6 +1531,7 @@ export {
   type PrimitiveToNativeTypeFactory,
   type SelectStatement,
   type Table,
+  defineColumn as column,
   defineTable as table,
   expr,
   from,
