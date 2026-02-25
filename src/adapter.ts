@@ -19,7 +19,7 @@ export const withLoggedQuery = async <T>(
   const loggers = u.wrap(logger);
   const { sql, params } = data;
 
-  loggers.forEach(logger => logger.debug(sql, params))
+  loggers.forEach(logger => logger.debug(sql, params));
 
   return Promise.resolve().then(() => fn(sql, params)).catch(error => {
     loggers.forEach(logger => logger.error(sql, params, error));
