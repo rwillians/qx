@@ -1,7 +1,7 @@
 {
   "name": "@rwillians/qx",
   "description": "A zero-dependencies teeny tiny ORM for SQLite.",
-  "version": "0.1.21",
+  "version": "0.2.0",
   "author": "Rafael Willians <me@rwillians.com>",
   "license": "MIT",
   "repository": {
