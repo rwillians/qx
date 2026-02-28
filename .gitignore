@@ -3,5 +3,6 @@ node_modules/
 build/
 dist/
 .envrc
+play.ts
 .DS_Store
 qx.sqlite
