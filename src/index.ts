@@ -1067,6 +1067,32 @@ type SelectStatement = {
 };
 
 /**
+ * @public  Represents a delete statement.
+ * @since   0.1.22
+ * @version 1
+ */
+type DeleteStatement = {
+  /**
+   * @public  The name of the table to delete from.
+   * @since   0.1.22
+   * @version 1
+   */
+  table: string;
+  /**
+   * @public  The alias of the table used in the where clause.
+   * @since   0.1.22
+   * @version 1
+   */
+  alias: string;
+  /**
+   * @public  The query's where clause.
+   * @since   0.1.22
+   * @version 1
+   */
+  where?: Expr;
+};
+
+/**
  * @private A codec for encoding data to the database's expected type,
  *          and decoding data from the database to the application's
  *          expected type.
@@ -1135,6 +1161,13 @@ interface IDatabase {
    * @version 1
    */
   createTable(op: CreateTableStatement): Promise<void>;
+  /**
+   * @public  Executes a delete statement, returning the number of
+   *          deleted rows.
+   * @since   0.1.22
+   * @version 1
+   */
+  delete(op: DeleteStatement): Promise<number>;
   /**
    * @public  Executes an insert statement, returning the newly
    *          inserted rows.
@@ -1357,6 +1390,17 @@ type InferSelection<T extends Query> = {
 };
 
 /**
+ * @private Transforms a {@link Query} into a {@link DeleteStatement}.
+ * @since   0.1.22
+ * @version 1
+ */
+const toDeleteStatement = <T extends Query>(query: T): DeleteStatement => ({
+  table: query.registry[query.from]![TABLE_NAME],
+  alias: query.from,
+  where: query.where,
+});
+
+/**
  * @private Transforms a {@link Query} into a {@link SelectStatement}.
  * @since   0.1.0
  * @version 1
@@ -1391,6 +1435,15 @@ class QueryBuilder<
   async all(db: IDatabase) {
     // @TODO calls query engine with the query object
     return db.query(toSelectStatement(this.query)) as Promise<Expand<InferSelection<Query<T, S>>>[]>;
+  }
+  /**
+   * @public  Deletes all rows matching the query's where clause,
+   *          returning the number of deleted rows.
+   * @since   0.1.22
+   * @version 1
+   */
+  async delete(db: IDatabase) {
+    return db.delete(toDeleteStatement(this.query));
   }
   /**
    * @public  Checks whether any rows exist matching the query.
@@ -1504,6 +1557,7 @@ export {
   type Column,
   type CreateTableStatement,
   type DDL,
+  type DeleteStatement,
   type Expr,
   type ExprAnd,
   type ExprBinaryOp,

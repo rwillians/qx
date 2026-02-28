@@ -34,6 +34,7 @@ export {
   type Column,
   type CreateTableStatement,
   type DDL,
+  type DeleteStatement,
   type Expr,
   type ExprAnd,
   type ExprBinaryOp,

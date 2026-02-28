@@ -7,6 +7,7 @@ import {
   type Column,
   type CreateTableStatement,
   type DDL,
+  type DeleteStatement,
   type Expr,
   type ExprAnd,
   type ExprBinaryOp,
@@ -410,6 +411,28 @@ const ddl = {
     return { sql: frags.join(''), params: values.params };
   },
   /**
+   * @private Generates DDL for delete statement.
+   * @since   0.1.22
+   * @version 1
+   */
+  delete: (op: DeleteStatement): DDL => {
+    const where = op.where
+      ? render.expr.any(op.where)
+      : EMPTY_RENDER_RESULT;
+
+    const frags: string[] = [
+      'DELETE FROM ',
+      render.ref(op.table),
+      ' AS ',
+      render.ref(op.alias),
+      (where.frags.length > 0 ? ' WHERE ' : ''),
+      ...where.frags,
+      ';'
+    ];
+
+    return { sql: frags.join(''), params: [...where.params] };
+  },
+  /**
    * @private Generates DDL for select statement.
    * @since   0.1.0
    * @version 1
@@ -511,6 +534,19 @@ class BunSQLite implements IDatabase {
   attachLogger(logger: ILogger) {
     this.loggers.push(logger);
     return this;
+  }
+  /**
+   * @public  Executes a delete statement.
+   * @since   0.1.22
+   * @version 1
+   */
+  async delete(op: DeleteStatement) {
+    const { sql, params } = ddl.delete(op);
+
+    return await withLoggedQuery(this.loggers, { sql, params }, () => this.conn
+      .prepare(sql)
+      .run(...params)
+      .changes);
   }
   /**
    * @public  Executes a create table statement.
